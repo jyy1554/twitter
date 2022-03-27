@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { authService } from '../fbase';
+import React, { useState } from "react";
+import { authService } from "../fbase";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-} from 'firebase/auth';
+} from "firebase/auth";
 
 const Auth = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [newAccount, setNewAccount] = useState(true);
+    const [error, setError] = useState("");
 
     const onChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'email') {
+        if (name === "email") {
             setEmail(value);
-        } else if (name === 'password') {
+        } else if (name === "password") {
             setPassword(value);
         }
     };
@@ -40,10 +41,12 @@ const Auth = () => {
                 );
             }
             console.log(data);
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            setError(err.message);
         }
     };
+
+    const toggleAccount = () => setNewAccount((prev) => !prev);
 
     return (
         <div>
@@ -66,9 +69,13 @@ const Auth = () => {
                 />
                 <input
                     type="submit"
-                    value={newAccount ? 'Create Account' : 'Login'}
+                    value={newAccount ? "Create Account" : "Login"}
                 />
+                {error}
             </form>
+            <span onClick={toggleAccount}>
+                {newAccount ? "Login" : "Create Account"}
+            </span>
             <div>
                 <button>Continue with Google</button>
                 <button>Continue with Github</button>
