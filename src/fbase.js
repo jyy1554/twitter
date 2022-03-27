@@ -1,5 +1,5 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth'; //auth 사용하기위해 추가
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth"; //auth 사용하기위해 추가
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
