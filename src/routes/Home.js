@@ -1,29 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { dbService } from "../fbase";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+    addDoc,
+    collection,
+    onSnapshot,
+    orderBy,
+    query,
+} from "firebase/firestore";
 
-function Home() {
+//userObj는 router에서 전달해준 prop
+function Home({ userObj }) {
     const [tweet, setTweet] = useState("");
     const [tweets, setTweets] = useState([]);
-    const getTweets = async () => {
-        const dbTweets = await getDocs(collection(dbService, "tweets"));
-        dbTweets.forEach((document) => {
-            const tweetObject = {
-                ...document.data(),
-                id: document.id,
-            };
-            setTweets((prev) => [tweetObject, ...prev]);
-        });
-    };
+
     useEffect(() => {
-        getTweets();
+        const q = query(
+            collection(dbService, "tweets"),
+            orderBy("createdAt", "desc")
+        );
+        onSnapshot(q, (snapshot) => {
+            const tweetArray = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setTweets(tweetArray);
+        });
     }, []);
+
     const onSubmit = async (e) => {
         e.preventDefault();
         await addDoc(collection(dbService, "tweets"), {
             //원하는 데이터 넣기
-            tweet,
+            text: tweet,
             createdAt: Date.now(),
+            creatorId: userObj.uid,
         });
         setTweet("");
     };
@@ -31,7 +41,7 @@ function Home() {
         const { value } = e.target;
         setTweet(value);
     };
-    console.log(tweets);
+
     return (
         <div>
             <form onSubmit={onSubmit}>
@@ -47,7 +57,7 @@ function Home() {
             <div>
                 {tweets.map((tweet) => (
                     <div key={tweet.id}>
-                        <h4>{tweet.tweet}</h4>
+                        <h4>{tweet.text}</h4>
                     </div>
                 ))}
             </div>
