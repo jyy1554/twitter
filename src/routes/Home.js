@@ -7,6 +7,7 @@ import {
     orderBy,
     query,
 } from "firebase/firestore";
+import Tweet from "../components/Tweet";
 
 //userObj는 router에서 전달해준 prop
 function Home({ userObj }) {
@@ -56,9 +57,11 @@ function Home({ userObj }) {
             </form>
             <div>
                 {tweets.map((tweet) => (
-                    <div key={tweet.id}>
-                        <h4>{tweet.text}</h4>
-                    </div>
+                    <Tweet
+                        key={tweet.id}
+                        tweetObj={tweet}
+                        isOwner={tweet.creatorId === userObj.uid}
+                    />
                 ))}
             </div>
         </div>
