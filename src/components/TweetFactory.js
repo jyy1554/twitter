@@ -1,12 +1,13 @@
 import { addDoc, collection } from "firebase/firestore";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid"; // 랜덤 uid를 만들어주는 npm 패키지
 import { dbService, storageService } from "../fbase";
 
 function TweetFactory({ userObj }) {
     const [tweet, setTweet] = useState("");
     const [attachment, setAttachment] = useState("");
+    const fileInput = useRef();
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -34,6 +35,7 @@ function TweetFactory({ userObj }) {
         await addDoc(collection(dbService, "tweets"), tweetObj);
         setTweet("");
         setAttachment("");
+        fileInput.current.value = "";
     };
     const onChange = (e) => {
         const { value } = e.target;
@@ -41,18 +43,23 @@ function TweetFactory({ userObj }) {
     };
     const onFileChange = (e) => {
         const { files } = e.target;
-        const theFile = files[0];
-        const reader = new FileReader();
-        reader.onloadend = (finishedEvent) => {
-            //리스너 만들기
-            const {
-                currentTarget: { result },
-            } = finishedEvent;
-            setAttachment(result);
-        };
-        reader.readAsDataURL(theFile);
+        if (files) {
+            const theFile = files[0];
+            const reader = new FileReader();
+            reader.onloadend = (finishedEvent) => {
+                //리스너 만들기
+                const {
+                    currentTarget: { result },
+                } = finishedEvent;
+                setAttachment(result);
+            };
+            reader.readAsDataURL(theFile);
+        }
     };
-    const onClearAttachment = () => setAttachment("");
+    const onClearAttachment = () => {
+        setAttachment("");
+        fileInput.current.value = "";
+    };
 
     return (
         <form onSubmit={onSubmit}>
@@ -63,7 +70,12 @@ function TweetFactory({ userObj }) {
                 placeholder="What's on your mind?"
                 maxLength={120}
             />
-            <input type="file" accept="image/*" onChange={onFileChange} />
+            <input
+                type="file"
+                accept="image/*"
+                onChange={onFileChange}
+                ref={fileInput}
+            />
             <input type="submit" value="Tweet" />
             {attachment && (
                 <div>
