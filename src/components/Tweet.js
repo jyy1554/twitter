@@ -10,13 +10,14 @@ function Tweet({ tweetObj, isOwner }) {
         const ok = window.confirm(
             "Are you sure you want to delete this tweet?"
         );
-        const TweetTextRef = doc(dbService, "tweets", `${tweetObj.id}`); //리터럴
-        const TweetImageRef = ref(storageService, tweetObj.attachmentUrl);
 
         if (ok) {
             //delete tweet
-            await deleteDoc(TweetTextRef);
-            await deleteObject(TweetImageRef);
+            await deleteDoc(doc(dbService, "tweets", `${tweetObj.id}`));
+            tweetObj.attachmentUrl &&
+                (await deleteObject(
+                    ref(storageService, tweetObj.attachmentUrl) //안의 내용을 따로 변수로 뺄 경우 정상동작하나 계속 오류 뱉음
+                ));
         }
     };
     const toggleEditing = () => setEditing((prev) => !prev);
