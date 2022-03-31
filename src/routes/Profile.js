@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService, dbService } from "../fbase";
 
-function Profile({ userObj }) {
+function Profile({ refreshUser, userObj }) {
     const navigate = useNavigate();
     const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
 
@@ -36,6 +36,7 @@ function Profile({ userObj }) {
             await updateProfile(userObj, {
                 displayName: newDisplayName,
             });
+            refreshUser();
         }
     };
 
