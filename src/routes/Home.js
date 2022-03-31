@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { dbService } from "../fbase";
-import {
-    addDoc,
-    collection,
-    onSnapshot,
-    orderBy,
-    query,
-} from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid"; // 랜덤 uid를 만들어주는 npm 패키지
+import { dbService, storageService } from "../fbase";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { ref, uploadString } from "firebase/storage";
 import Tweet from "../components/Tweet";
 
 //userObj는 router에서 전달해준 prop
@@ -31,13 +27,17 @@ function Home({ userObj }) {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await addDoc(collection(dbService, "tweets"), {
-            //원하는 데이터 넣기
-            text: tweet,
-            createdAt: Date.now(),
-            creatorId: userObj.uid,
-        });
-        setTweet("");
+
+        const fileRef = ref(storageService, `${userObj.uid}/${uuidv4()}`); //uuidv4는 랜덤 uid를 만들어주는 함수
+        const response = await uploadString(fileRef, attachment, "data_url");
+        console.log(response);
+        // await addDoc(collection(dbService, "tweets"), {
+        //     //원하는 데이터 넣기
+        //     text: tweet,
+        //     createdAt: Date.now(),
+        //     creatorId: userObj.uid,
+        // });
+        // setTweet("");
     };
     const onChange = (e) => {
         const { value } = e.target;

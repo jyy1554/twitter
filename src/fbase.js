@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"; //auth 사용하기위해 추가
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -16,3 +17,4 @@ const app = initializeApp(firebaseConfig);
 
 export const authService = getAuth(app);
 export const dbService = getFirestore();
+export const storageService = getStorage();
