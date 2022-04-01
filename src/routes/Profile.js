@@ -20,7 +20,7 @@ function Profile({ refreshUser, userObj }) {
         );
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-            console.log(doc.data());
+            // console.log(doc.data());
         });
     };
     useEffect(() => {
